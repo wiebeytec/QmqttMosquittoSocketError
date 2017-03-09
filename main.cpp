@@ -15,8 +15,11 @@ int main(int argc, char *argv[])
     QCommandLineOption hostname("hostname", "Mosquitto server hostname", "hostname" );
     QCommandLineOption username("username", "Mosquitto username", "username");
     QCommandLineOption password("password", "Mosquitto password", "password");
+    QCommandLineOption port("port", "port", "port", "8883");
+
 
     parser.addOption(hostname);
+    parser.addOption(port);
     parser.addOption(username);
     parser.addOption(password);
 
@@ -29,7 +32,16 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    TryToTriggerMosquittoError foo(parser.value(hostname), parser.value(username), parser.value(password));
+    bool parseOK = false;
+    int port_int = parser.value(port).toInt(&parseOK);
+
+    if (!parseOK)
+    {
+        qCritical() << "Not a valid port number";
+        return 2;
+    }
+
+    TryToTriggerMosquittoError foo(parser.value(hostname), port_int, parser.value(username), parser.value(password));
     foo.doStuff();
 
     return a.exec();

@@ -1,12 +1,12 @@
 #include "trytotriggermosquittoerror.h"
 #include <QDateTime>
 
-TryToTriggerMosquittoError::TryToTriggerMosquittoError(const QString &hostname, const QString &username, const QString &password, QObject *parent) : QObject(parent)
+TryToTriggerMosquittoError::TryToTriggerMosquittoError(const QString &hostname, const int port, const QString &username, const QString &password, QObject *parent) : QObject(parent)
 {
     qsrand(QDateTime::currentMSecsSinceEpoch());
     QString clientID = QString("TryingToBreakSSL_%1").arg(qrand());
 
-    mMqttClient.reset(new QMQTT::Client(hostname, 8883, true, true)); // TODO: I ignoreSelfSigned can be false and it still works?
+    mMqttClient.reset(new QMQTT::Client(hostname, port, true, true)); // TODO: I ignoreSelfSigned can be false and it still works?
     mMqttClient->setUsername(username);
     mMqttClient->setPassword(password);
     mMqttClient->setCleanSession(true);
