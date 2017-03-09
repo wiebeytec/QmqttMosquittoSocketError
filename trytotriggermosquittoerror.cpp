@@ -38,12 +38,24 @@ void TryToTriggerMosquittoError::onError(const QMQTT::ClientError error)
 void TryToTriggerMosquittoError::onConnect()
 {
     const QString subscribePath = "N/847e4062cb99/#";
-    const QString publishPath = "R/847e4062cb99/system/0/Serial";
-    QString line = QString("Connection established. Subscribing to %1. Publishing %2").arg(subscribePath).arg(publishPath);
+
+    QString line = QString("Connection established. Publishing %1").arg(subscribePath);
     qDebug() << line;
 
     mMqttClient->subscribe(subscribePath, 0);
+    mMqttClient->subscribe("#", 0);
 
+
+    connect(&mPublishTimer, &QTimer::timeout, this, &TryToTriggerMosquittoError::keepAlivePublish);
+    mPublishTimer.setSingleShot(false);
+    mPublishTimer.start(50000);
+    keepAlivePublish();
+}
+
+void TryToTriggerMosquittoError::keepAlivePublish()
+{
+    const QString publishPath = "R/847e4062cb99/system/0/Serial";
+    qDebug() << QString("Publishing %1 for keepalive").arg(publishPath);
     const int qos = 2;
     QMQTT::Message message(qrand(), publishPath, QByteArray(), qos);
     mMqttClient->publish(message);
