@@ -7,11 +7,14 @@
 #include <qmqtt/qmqtt_message.h>
 #include <QTimer>
 
+#define GRONINGEN_REDFLOW "847e4062cb99"
+
 class TryToTriggerMosquittoError : public QObject
 {
     Q_OBJECT
     QScopedPointer<QMQTT::Client> mMqttClient;
     QTimer mPublishTimer;
+    QStringList installations;
 public:
     explicit TryToTriggerMosquittoError(const QString &hostname, const int port, const QString &username, const QString &password, QObject *parent = 0);
     void doStuff();
