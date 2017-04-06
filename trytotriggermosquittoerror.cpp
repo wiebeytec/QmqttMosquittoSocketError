@@ -2,7 +2,7 @@
 #include <QDateTime>
 
 TryToTriggerMosquittoError::TryToTriggerMosquittoError(const QString &hostname, const int port, const QString &username, const QString &password, QObject *parent) : QObject(parent),
-    installations({GRONINGEN_REDFLOW, "b0d5ccf1f779", "0017eb2b37ac", "d0ff500097c0"})
+    installations({GRONINGEN_REDFLOW, "0017eb2b37ac", "d0ff500097c0", "883314fc2fa6"})
 {
     qsrand(QDateTime::currentMSecsSinceEpoch());
     QString clientID = QString("TryingToBreakSSL_%1").arg(qrand());
@@ -40,12 +40,22 @@ void TryToTriggerMosquittoError::onConnect()
 {
     qDebug() << "Connection established";
 
-    foreach(const QString portalid, installations)
+    bool politeSubscribe = false;
+
+    if (politeSubscribe)
     {
-        const QString subscribePath = QString("N/%1/#").arg(portalid);
-        QString line = QString("Publishing %1").arg(subscribePath);
-        qDebug() << line;
-        mMqttClient->subscribe(subscribePath, 0);
+        foreach(const QString portalid, installations)
+        {
+            const QString subscribePath = QString("N/%1/#").arg(portalid);
+            QString line = QString("Publishing %1").arg(subscribePath);
+            qDebug() << line;
+            mMqttClient->subscribe(subscribePath, 0);
+        }
+    }
+    else
+    {
+        // Subscribing to wildcards causes a lot of ACL checks in Mosquitto, so this would show any deficiencies there.
+        mMqttClient->subscribe("#", 0);
     }
 
     connect(&mPublishTimer, &QTimer::timeout, this, &TryToTriggerMosquittoError::keepAlivePublish);
