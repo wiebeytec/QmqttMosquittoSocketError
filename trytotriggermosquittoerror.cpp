@@ -1,5 +1,6 @@
 #include "trytotriggermosquittoerror.h"
 #include <QDateTime>
+#include <QCoreApplication>
 
 TryToTriggerMosquittoError::TryToTriggerMosquittoError(const QString &hostname, const int port, const QString &username, const QString &password, QObject *parent) : QObject(parent),
     installations({GRONINGEN_REDFLOW, "0017eb2b37ac", "d0ff500097c0", "883314fc2fa6"})
@@ -34,6 +35,7 @@ void TryToTriggerMosquittoError::onError(const QMQTT::ClientError error)
 {
     QString line = QString("Error occurred. QMQTT error code %1").arg(error);
     qDebug() << line;
+    QCoreApplication::quit();
 }
 
 void TryToTriggerMosquittoError::onConnect()
